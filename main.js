@@ -4,15 +4,11 @@ const message = document.getElementById('message');
 const shift = document.getElementById('shift');
 const cipher = document.getElementById('cipher');
 
-const alphabetUkr = 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ';
-const alphabetEng = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const numbers = '0123456789';
-const symbols = ' .,?/@"\'()[]*^&%$#*-+';
-const elements = alphabetUkr + alphabetEng + numbers + symbols;
+const alphabet = 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ';
 
 class CaesarCipher{
-  constructor(elements, message, shift, cipher) {
-    this.elements = elements;
+  constructor(alphabet, message, shift, cipher) {
+    this.alphabet = alphabet;
     this.message = message;
     this.shift = shift;
     this.cipher = cipher;
@@ -20,44 +16,45 @@ class CaesarCipher{
 
   shiftAlphabet = (shift) => {
     let shiftedAlphabet = '';
-    for (let i = 0; i < this.elements.length; i++) {
-      const currentText = (this.elements[i + shift] === undefined)
-        ? (this.elements[i + shift - this.elements.length])
-        : (this.elements[i + shift]);
+    for (let i = 0; i < this.alphabet.length; i++) {
+      const currentText = (this.alphabet[i + shift] === undefined)
+        ? (this.alphabet[i + shift - this.alphabet.length])
+        : (this.alphabet[i + shift]);
       shiftedAlphabet = shiftedAlphabet.concat(currentText);
     }
     return shiftedAlphabet;
-  }
+  };
+
+  coder = (text, status) => {
+    const shifting = parseInt(this.shift.value);
+    const shiftedAlphabet = this.shiftAlphabet(shifting);
+    let crypticMessage = '';
+    for (let i = 0; i < text.length; i++) {
+      if (text[i] === ' ') {
+        crypticMessage = crypticMessage.concat(' ');
+      } else if(status === 'encrypt'){
+        const indexOfLetter = this.alphabet.indexOf(text[i].toUpperCase());
+        crypticMessage = crypticMessage.concat(shiftedAlphabet[indexOfLetter]);
+      } else {
+        const indexOfLetter = shiftedAlphabet.indexOf(text[i].toUpperCase());
+        crypticMessage = crypticMessage.concat(this.alphabet[indexOfLetter]);
+      }
+    }
+    return crypticMessage.toLowerCase();
+  };
 
   encrypt = () => {
     const text = this.message.value;
-    const shifting = parseInt(this.shift.value);
-    const shiftedAlphabet = this.shiftAlphabet(shifting);
-    let encryptedMessage = '';
-    for (let i = 0; i < text.length; i++) {
-      const indexOfLetter = this.elements.indexOf(text[i].toUpperCase());
-      encryptedMessage = encryptedMessage.concat(shiftedAlphabet[indexOfLetter]);
-    }
-    this.cipher.value = encryptedMessage.toLowerCase();
+    this.cipher.value = this.coder(text, 'encrypt');
   };
 
   decrypt = () => {
     const text = this.cipher.value;
-    const shifting = parseInt(this.shift.value);
-    const shiftedAlphabet = this.shiftAlphabet(shifting);
-    let encryptedMessage = '';
-    for (let i = 0; i < text.length; i++) {
-      if (text[i] === ' ') {
-        encryptedMessage = encryptedMessage.concat(' ');
-      }
-      const indexOfLetter = shiftedAlphabet.indexOf(text[i].toUpperCase());
-      encryptedMessage = encryptedMessage.concat(this.elements[indexOfLetter]);
-    }
-    this.message.value = encryptedMessage.toLowerCase();
-  }
+    this.message.value = this.coder(text, 'decrypt');
+  };
 }
 
-const caesarCipher = new CaesarCipher(elements, message, shift, cipher);
+const caesarCipher = new CaesarCipher(alphabet, message, shift, cipher);
 
 encryptButton.addEventListener('click', caesarCipher.encrypt );
 decryptButton.addEventListener('click', caesarCipher.decrypt );
