@@ -34,10 +34,10 @@ class CaesarCipher{
         crypticMessage = crypticMessage.concat(' ');
       } else if(status === 'encrypt'){
         const indexOfLetter = this.alphabet.indexOf(text[i].toUpperCase());
-        crypticMessage = crypticMessage.concat(shiftedAlphabet[indexOfLetter]);
+        crypticMessage = crypticMessage.concat(shiftedAlphabet[indexOfLetter]  || '*');
       } else {
         const indexOfLetter = shiftedAlphabet.indexOf(text[i].toUpperCase());
-        crypticMessage = crypticMessage.concat(this.alphabet[indexOfLetter]);
+        crypticMessage = crypticMessage.concat(this.alphabet[indexOfLetter] || '*');
       }
     }
     return crypticMessage.toLowerCase();
